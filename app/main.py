@@ -1,9 +1,10 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
-
 from app.database import Base, engine
 import app.models
 from app.routers import auth
+from app.routers import products
+
 
 
 @asynccontextmanager
@@ -20,6 +21,9 @@ app = FastAPI(
 
 # ⬅️ Router só DEPOIS de criar o app
 app.include_router(auth.router)
+
+app.include_router(products.router)
+
 
 
 @app.get("/")
