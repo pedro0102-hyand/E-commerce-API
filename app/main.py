@@ -4,6 +4,7 @@ from app.database import Base, engine
 import app.models
 from app.routers import auth
 from app.routers import products
+from app.routers import cart
 
 
 
@@ -24,7 +25,7 @@ app.include_router(auth.router)
 
 app.include_router(products.router)
 
-
+app.include_router(cart.router)
 
 @app.get("/")
 def health_check():
