@@ -21,7 +21,7 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# ⬅️ Router só DEPOIS de criar o app
+
 app.include_router(auth.router)
 
 app.include_router(products.router)

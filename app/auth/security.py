@@ -2,7 +2,7 @@ from passlib.context import CryptContext
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-
+# transforma a senha em HASH
 def get_password_hash(password: str) -> str:
     
     return pwd_context.hash(password)
