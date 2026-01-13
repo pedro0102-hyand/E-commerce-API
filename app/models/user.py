@@ -13,6 +13,6 @@ class User(Base):
     # Armazena a senha em formato HASH
     hashed_password: Mapped[str] = mapped_column(String)
     # Boolean que controla permissoes
-    is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
+    is_admin: Mapped[bool] = mapped_column(Boolean, default=True)
 
     orders = relationship("Order", back_populates="user")
