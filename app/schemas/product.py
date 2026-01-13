@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional
 
-class ProductBase(BaseModel):
+class ProductBase(BaseModel): # classe PAI, defini como os produtos serao no sistema
 
     name: str
     description: str
@@ -11,7 +11,7 @@ class ProductBase(BaseModel):
 class ProductCreate(ProductBase):
     pass 
 
-class ProductUpdate(BaseModel):
+class ProductUpdate(BaseModel): # permitir atualizacao sobre o produto
 
     name: Optional[str] = None
     description: Optional[str] = None
