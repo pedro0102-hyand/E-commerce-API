@@ -5,7 +5,7 @@ import app.models
 from app.routers import auth
 from app.routers import products
 from app.routers import cart
-from app.routers import auth, products, cart, checkout
+from app.routers import auth, products, cart, checkout, payments
 
 
 
@@ -29,6 +29,8 @@ app.include_router(products.router)
 app.include_router(cart.router)
 
 app.include_router(checkout.router)
+
+app.include_router(payments.router)
 
 @app.get("/")
 def health_check():
