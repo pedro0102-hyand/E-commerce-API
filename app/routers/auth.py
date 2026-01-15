@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app.database import get_db
@@ -6,11 +6,17 @@ from app.models.user import User
 from app.auth.security import verify_password, get_password_hash
 from app.auth.jwt import create_access_token
 from app.schemas.user import UserCreate, UserResponse 
+from app.utils import limiter 
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-def register(user_in: UserCreate, db: Session = Depends(get_db)):
+@limiter.limit("3/hour") # Limite rigoroso para evitar criação de contas em massa
+def register(
+    request: Request, 
+    user_in: UserCreate, 
+    db: Session = Depends(get_db)
+):
     """
     Cria um novo usuário com senha criptografada.
     """
@@ -22,7 +28,7 @@ def register(user_in: UserCreate, db: Session = Depends(get_db)):
             detail="Este e-mail já está cadastrado."
         )
     
-    # 2. Cria o novo usuário (is_admin é False por padrão no modelo)
+    # 2. Cria o novo usuário
     new_user = User(
         email=user_in.email,
         hashed_password=get_password_hash(user_in.password)
@@ -34,14 +40,16 @@ def register(user_in: UserCreate, db: Session = Depends(get_db)):
     return new_user
 
 @router.post("/login")
+@limiter.limit("5/minute") # Limite para evitar ataques de força bruta
 def login(
+    request: Request,
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db),
 ):
     """
     Gera o token de acesso (JWT) para o usuário.
     """
-    # Busca o usuário pelo e-mail (que o OAuth2 chama de username)
+    # Busca o usuário pelo e-mail
     user = db.query(User).filter(User.email == form_data.username).first()
 
     # Valida se o usuário existe e se a senha está correta
@@ -53,7 +61,7 @@ def login(
             detail="Email ou senha inválidos",
         )
 
-    # Cria o token JWT com o e-mail do usuário no campo 'sub'
+    # Cria o token JWT
     access_token = create_access_token(
         data={"sub": user.email}
     )
